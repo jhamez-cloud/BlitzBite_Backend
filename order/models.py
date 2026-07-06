@@ -79,3 +79,12 @@ class OrderItem(models.Model):
         super().save(*args,**kwargs)
 
         self.order.update_subtotal()
+
+class OrdersTimeLineEntry(models.Model):
+    order = models.ForeignKey(Order,
+                              on_delete=models.CASCADE,
+                              related_name="order_timeline")
+    status = models.CharField(max_length=100)
+    label = models.CharField(max_length=100)
+    time = models.DateTimeField(null=True,blank=True)
+    completed = models.BooleanField()

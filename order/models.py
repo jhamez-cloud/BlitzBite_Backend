@@ -66,7 +66,7 @@ class OrderItem(models.Model):
     menu_item = models.ForeignKey('menu.MenuItem',
                                   on_delete=models.CASCADE,
                                   related_name="order_items")
-    addons = models.ForeignKey('menu.Addons',
+    addons = models.ForeignKey('menu.Addon',
                                on_delete=models.CASCADE,
                                related_name="order_items")
     name = models.CharField(max_length=100)

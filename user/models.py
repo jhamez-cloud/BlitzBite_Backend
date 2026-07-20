@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
+import uuid
 
 def get_default_preferences():
     return {
@@ -12,16 +13,18 @@ def get_default_preferences():
     }
 
 # Create your models here.
-class User(models.Model):
+class User(AbstractUser):
     user_id = models.CharField(max_length=255, unique=True,editable=False)
+    public_id = models.UUIDField(default=uuid.uuid4,editable=False,unique=True)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=20, unique=True)
-    name = models.CharField(max_length=255)
     avatar = models.ImageField(upload_to='user/avatars/', null=True, blank=True)
     total_orders = models.PositiveIntegerField(default=0)
     total_spent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    preferences = models.JSONField(default=get_default_preferences, blank=True)
-    joined_date = models.DateTimeField(auto_now_add=True)
+    preferences = models.JSONField(default=get_default_preferences, blank=True,null=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     def save(self,*args, **kwargs):
         new = self.pk is None
@@ -34,9 +37,16 @@ class User(models.Model):
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
     label = models.CharField(max_length=255)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6,null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6,null=True, blank=True)
+    address = models.TextField()  # the actual street address text — add if missing
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if self.is_default:
+            Address.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
 
     @property
     def coordinates(self):
@@ -59,4 +69,11 @@ class PaymentMethod(models.Model):
     type = models.CharField(max_length=20, choices=PaymentMethodType.choices)
     label = models.CharField(max_length=255)
     details = models.JSONField(default=dict, blank=True)
+    is_default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)  # worth adding, useful for ordering/display
+
+    def save(self, *args, **kwargs):
+        if self.is_default:
+            PaymentMethod.objects.filter(user=self.user, is_default=True).exclude(pk=self.pk).update(is_default=False)
+        super().save(*args, **kwargs)
 

@@ -1,7 +1,13 @@
+# restaurants/urls.py
 from rest_framework.routers import DefaultRouter
-from .api.viewsets import RestaurantViewset
+from rest_framework_nested import routers
+from .api.viewsets import RestaurantViewSet, OpeningHoursViewSet, RestaurantCategoryViewSet
 
 router = DefaultRouter()
-router.register(r"restaurant", RestaurantViewset, basename="restaurants")
+router.register(r"restaurants", RestaurantViewSet, basename="restaurants")
+router.register(r"restaurant-categories", RestaurantCategoryViewSet, basename="restaurant-categories")
 
-urlpatterns = router.urls
+restaurants_router = routers.NestedSimpleRouter(router, r"restaurants", lookup="restaurant")
+restaurants_router.register(r"opening-hours", OpeningHoursViewSet, basename="restaurant-opening-hours")
+
+urlpatterns = router.urls + restaurants_router.urls

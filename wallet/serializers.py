@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Wallet,WalletTransaction
-from user.serializers import UserReadSerializer
+from user.serializers import UserSerializer
 
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:

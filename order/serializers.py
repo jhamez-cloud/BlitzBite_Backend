@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import OrdersTimeLineEntry,Order,OrderItem
 from menu.serializers import MenuItemReadSerializer,AddonSerializer
-from user.serializers import UserReadSerializer
+from user.serializers import UserSerializer
 
 class OrderTimelineEntrySerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,7 +20,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderReadSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True,read_only=True)
-    user = UserReadSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
     subtotal = serializers.ReadOnlyField()
     class Meta:
         model = Order

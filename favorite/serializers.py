@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from .models import Favorite
-from user.serializers import UserReadSerializer
-from restaurant.serializers import RestaurantReadSerializer
+from user.serializers import UserSerializer
+from restaurant.serializers import RestaurantListSerializer
 
 class FavoriteReadSerializer(serializers.ModelSerializer):
-    user = UserReadSerializer(read_only=True)
-    restaurant = RestaurantReadSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    restaurant = RestaurantListSerializer(read_only=True)
     class Meta:
         model = Favorite
         fields = '__all__'

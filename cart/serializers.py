@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from .models import Cart,CartItem
-from user.serializers import UserReadSerializer
+from user.serializers import UserSerializer
 from menu.serializers import MenuItemReadSerializer,MenuItemWriteSerializer,AddonSerializer
 from restaurant.models import Restaurant
 
 class CartSerializer(serializers.ModelSerializer):
-    user = UserReadSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
     total = serializers.ReadOnlyField(source='total')
     class Meta:
         model = Cart

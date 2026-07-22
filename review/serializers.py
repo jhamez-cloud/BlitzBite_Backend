@@ -1,11 +1,11 @@
 from rest_framework import serializers
 from .models import Review
-from user.serializers import UserReadSerializer
-from restaurant.serializers import RestaurantReadSerializer
+from user.serializers import UserSerializer
+from restaurant.serializers import RestaurantListSerializer
 
 class ReviewReadSerializer(serializers.ModelSerializer):
-    user = UserReadSerializer(read_only=True)
-    restaurant = RestaurantReadSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
+    restaurant = RestaurantListSerializer(read_only=True)
     class Meta:
         model = Review
         fields = '__all__'

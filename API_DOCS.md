@@ -255,3 +255,16 @@ Order (response)
 
 ---
 If you want, I can now scaffold the Django project and generate model + serializer stubs for each app. Which step should I do next?
+
+## Restaurant and menu routes
+GET/POST              /api/v1/restaurants/{restaurant_pk}/addons/
+GET/PUT/PATCH/DELETE   /api/v1/restaurants/{restaurant_pk}/addons/{id}/
+
+GET/POST              /api/v1/restaurants/{restaurant_pk}/menu-items/
+GET/PUT/PATCH/DELETE   /api/v1/restaurants/{restaurant_pk}/menu-items/{id}/
+
+GET/POST              /api/v1/restaurants/{restaurant_pk}/menu-items/{menuitem_pk}/addon-options/
+GET/PUT/PATCH/DELETE   /api/v1/restaurants/{restaurant_pk}/menu-items/{menuitem_pk}/addon-options/{id}/
+
+GET/POST              /api/v1/menu-categories/
+GET/PUT/PATCH/DELETE   /api/v1/menu-categories/{id}/

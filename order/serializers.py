@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import OrdersTimeLineEntry,Order,OrderItem
-from menu.serializers import MenuItemReadSerializer,AddonSerializer
+from menu.serializers import MenuItemListSerializer,AddonSerializer
 from user.serializers import UserSerializer
 
 class OrderTimelineEntrySerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class OrderTimelineEntrySerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     subtotal = serializers.ReadOnlyField()
-    menu_item = MenuItemReadSerializer()
+    menu_item = MenuItemListSerializer()
     addons = AddonSerializer(many=True)
 
     class Meta:

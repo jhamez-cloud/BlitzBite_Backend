@@ -21,7 +21,7 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='user/avatars/', null=True, blank=True)
     total_orders = models.PositiveIntegerField(default=0)
     total_spent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    preferences = models.JSONField(default=get_default_preferences, blank=True,null=True)
+    preferences = models.JSONField(default=get_default_preferences(), blank=True,null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

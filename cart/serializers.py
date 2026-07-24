@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Cart,CartItem
 from user.serializers import UserSerializer
-from menu.serializers import MenuItemReadSerializer,MenuItemWriteSerializer,AddonSerializer
+from menu.serializers import MenuItemListSerializer,AddonSerializer
 from restaurant.models import Restaurant
 
 class CartSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class CartSerializer(serializers.ModelSerializer):
 
 class CartItemReadSerializer(serializers.ModelSerializer):
     cart = CartSerializer(read_only=True)
-    menu_item = MenuItemReadSerializer(read_only=True)
+    menu_item = MenuItemListSerializer(read_only=True)
     restaurant = serializers.PrimaryKeyRelatedField(read_only=True)
     selected_addons = AddonSerializer(many=True,read_only=True)
     class Meta:

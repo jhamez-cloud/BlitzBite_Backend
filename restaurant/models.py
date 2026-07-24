@@ -1,18 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.utils.text import slugify
-
-# Creates a unique slug by appending -2, -3, to duplicates
-def generate_unique_slug(instance, base_text, slug_field='slug'):
-    """Appends -2, -3, etc. if the base slug is already taken by another row."""
-    base_slug = slugify(base_text)
-    slug = base_slug
-    ModelClass = instance.__class__
-    counter = 2
-    while ModelClass.objects.filter(**{slug_field: slug}).exclude(pk=instance.pk).exists():
-        slug = f"{base_slug}-{counter}"
-        counter += 1
-    return slug
+from config.helpers import generate_unique_slug
 
 # Create your models here.
 class Restaurant(models.Model):
@@ -96,4 +85,7 @@ class RestaurantCategory(models.Model):
         if not self.slug:
             self.slug = generate_unique_slug(self, self.name)
             RestaurantCategory.objects.filter(pk=self.pk).update(slug=self.slug)
+
+    def __str__(self):
+        return f"Category-{self.id}: {self.name}"
 

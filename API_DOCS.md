@@ -254,7 +254,6 @@ Order (response)
 5. Add Celery tasks and payment gateway integration.
 
 ---
-If you want, I can now scaffold the Django project and generate model + serializer stubs for each app. Which step should I do next?
 
 ## Restaurant and menu routes
 GET/POST              /api/v1/restaurants/{restaurant_pk}/addons/
@@ -268,3 +267,12 @@ GET/PUT/PATCH/DELETE   /api/v1/restaurants/{restaurant_pk}/menu-items/{menuitem_
 
 GET/POST              /api/v1/menu-categories/
 GET/PUT/PATCH/DELETE   /api/v1/menu-categories/{id}/
+
+## cart and cartitems routes
+GET    /api/v1/cart/                — current cart (creates one if none exists)
+POST   /api/v1/cart/apply-coupon/   — placeholder, not yet implemented
+
+GET    /api/v1/cart/items/          — current cart's items
+POST   /api/v1/cart/items/          — add an item
+PATCH  /api/v1/cart/items/{id}/     — update quantity/instructions
+DELETE /api/v1/cart/items/{id}/     — remove an item

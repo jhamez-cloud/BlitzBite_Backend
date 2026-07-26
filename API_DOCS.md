@@ -268,6 +268,7 @@ GET/PUT/PATCH/DELETE   /api/v1/restaurants/{restaurant_pk}/menu-items/{menuitem_
 GET/POST              /api/v1/menu-categories/
 GET/PUT/PATCH/DELETE   /api/v1/menu-categories/{id}/
 
+
 ## cart and cartitems routes
 GET    /api/v1/cart/                — current cart (creates one if none exists)
 POST   /api/v1/cart/apply-coupon/   — placeholder, not yet implemented
@@ -276,3 +277,18 @@ GET    /api/v1/cart/items/          — current cart's items
 POST   /api/v1/cart/items/          — add an item
 PATCH  /api/v1/cart/items/{id}/     — update quantity/instructions
 DELETE /api/v1/cart/items/{id}/     — remove an item
+
+## orders routes
+GET    /api/v1/orders/              — list orders
+POST   /api/v1/orders/              — create order from current cart
+GET    /api/v1/orders/{id}/         — retrieve one order
+POST   /api/v1/orders/{id}/cancel/  — cancel (pending only)
+PATCH  /api/v1/orders/{id}/status/  — staff status transition
+
+## promotions and coupons routes
+GET/POST              /api/v1/promotions/
+GET/PUT/PATCH/DELETE   /api/v1/promotions/{id}/
+
+GET/POST              /api/v1/coupons/
+GET/PUT/PATCH/DELETE   /api/v1/coupons/{id}/
+POST                   /api/v1/coupons/validate/

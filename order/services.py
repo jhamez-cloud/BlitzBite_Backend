@@ -1,8 +1,45 @@
 # orders/services.py
 from decimal import Decimal
 from django.db import transaction
+from django.db.models import F
 from django.utils import timezone
+from promotion.models import Coupon
 from .models import Order, OrderItem, OrderItemAddon, OrdersTimeLineEntry
+
+
+def _apply_coupon(coupon_code, subtotal):
+    """Validates the coupon and atomically consumes one use of it.
+    Returns the discount amount, or raises ValueError if invalid.
+    Must be called inside the same transaction as order creation, so a
+    failed order never leaves a coupon partially consumed."""
+    try:
+        coupon = Coupon.objects.select_for_update().get(code__iexact=coupon_code)
+    except Coupon.DoesNotExist:
+        raise ValueError(f"Coupon '{coupon_code}' not found.")
+
+    if not coupon.is_valid_now:
+        raise ValueError(f"Coupon '{coupon_code}' is no longer valid.")
+
+    if subtotal < coupon.minimum_order:
+        raise ValueError(
+            f"Order must be at least {coupon.minimum_order} to use coupon '{coupon_code}'."
+        )
+
+    # Atomic increment — only succeeds if usage limit hasn't been reached.
+    # Guards against two concurrent checkouts both consuming the last use.
+    updated = Coupon.objects.filter(
+        pk=coupon.pk, used_count__lt=F('max_uses')
+    ).update(used_count=F('used_count') + 1)
+
+    if not updated:
+        raise ValueError(f"Coupon '{coupon_code}' has reached its usage limit.")
+
+    if coupon.discount_type == Coupon.DiscountTypes.PERCENTAGE:
+        discount = subtotal * (coupon.discount_value / 100)
+    else:
+        discount = coupon.discount_value
+
+    return min(discount, subtotal)  # never discount below zero
 
 
 @transaction.atomic
@@ -10,25 +47,26 @@ def create_order_from_cart(cart, user, delivery_address, payment_method, tip=Dec
     if not cart.items.exists():
         raise ValueError("Cannot create an order from an empty cart.")
 
-    # All items in a cart are assumed to belong to one restaurant (per your
-    # spec's single-restaurant-per-cart constraint) — take it from the first item.
     restaurant = cart.items.first().restaurant
 
-    # Re-validate live prices/availability at checkout — never trust the cart's
-    # cached snapshot for the actual charge (per your original business rules).
     for cart_item in cart.items.all():
         live_item = cart_item.menu_item
         if not live_item.available:
             raise ValueError(f"'{live_item.name}' is no longer available.")
 
+    subtotal = cart.subtotal
     discount = Decimal('0.00')
-    # TODO: real coupon validation/application happens once the promotions app exists.
-    # For now, coupon_code is accepted but not yet applied.
+
+    if coupon_code:
+        discount = _apply_coupon(coupon_code, subtotal)
+        # If _apply_coupon raises ValueError, @transaction.atomic rolls back
+        # everything — no order is created, and the coupon's used_count
+        # increment above is undone too, since it's all one transaction.
 
     order = Order.objects.create(
         user=user,
         restaurant=restaurant,
-        subtotal=cart.subtotal,
+        subtotal=subtotal,
         delivery_fee=cart.delivery_fee,
         discount=discount,
         tip=tip,
@@ -64,7 +102,6 @@ def create_order_from_cart(cart, user, delivery_address, payment_method, tip=Dec
         completed=True,
     )
 
-    # Clear the cart now that it's been converted into an order
     cart.items.all().delete()
 
     return order

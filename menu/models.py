@@ -36,6 +36,9 @@ class MenuItemAddon(models.Model):
         default=1, help_text="Max quantity of this addon a customer can select"
     )
 
+    def __str__(self):
+        return f"{self.menu_item.name} - {self.addon.name}"
+    
     class Meta:
         unique_together = ('menu_item', 'addon')
 
@@ -43,3 +46,6 @@ class Addon(models.Model):
     restaurant = models.ForeignKey('restaurant.Restaurant', on_delete=models.CASCADE, related_name='addons')
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+
+    def __str__(self):
+        return self.name

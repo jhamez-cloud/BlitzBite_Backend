@@ -13,26 +13,20 @@ def get_default_preferences():
     }
 
 # Create your models here.
-class User(AbstractUser):
-    user_id = models.CharField(max_length=255, unique=True,editable=False)
-    public_id = models.UUIDField(default=uuid.uuid4,editable=False,unique=True)
+class User(models.Model):
+    firebase_uid = models.CharField(max_length=128, unique=True, editable=False)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=20, unique=True)
+    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    name = models.CharField(max_length=255, blank=True)
     avatar = models.ImageField(upload_to='user/avatars/', null=True, blank=True)
     total_orders = models.PositiveIntegerField(default=0)
     total_spent = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    preferences = models.JSONField(default=get_default_preferences(), blank=True,null=True)
+    preferences = models.JSONField(default=get_default_preferences, blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
-    def save(self,*args, **kwargs):
-        new = self.pk is None
-        super().save(*args,**kwargs)
-
-        if new and not self.user_id:
-            self.user_id = f"user_{self.pk:03d}"
-            User.objects.filter(pk=self.pk).update(user_id=self.user_id)
+    @property
+    def is_authenticated(self):
+        return True
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')

@@ -55,6 +55,10 @@ class PaymentMethodSerializer(serializers.ModelSerializer):
 
         return attrs
 
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['name', 'phone']
 
 class UserSerializer(serializers.ModelSerializer):
     addresses = AddressSerializer(many=True, read_only=True)
@@ -63,10 +67,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'public_id', 'email', 'username', 'phone', 'avatar',
+            'id', 'email', 'phone', 'avatar',
             'total_orders', 'total_spent', 'preferences',
             'date_joined', 'addresses', 'payment_methods',
         ]
         read_only_fields = [
-            'id', 'public_id', 'total_orders', 'total_spent', 'date_joined',
+            'id', 'total_orders', 'total_spent', 'date_joined',
         ]

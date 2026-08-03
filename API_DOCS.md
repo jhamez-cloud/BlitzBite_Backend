@@ -292,3 +292,23 @@ GET/PUT/PATCH/DELETE   /api/v1/promotions/{id}/
 GET/POST              /api/v1/coupons/
 GET/PUT/PATCH/DELETE   /api/v1/coupons/{id}/
 POST                   /api/v1/coupons/validate/
+
+## reviews and rating 
+GET   /api/v1/restaurants/{restaurant_pk}/reviews/    — list reviews for a restaurant
+POST  /api/v1/restaurants/{restaurant_pk}/reviews/    — submit a review (order_id, rating, comment)
+
+## favorites
+GET POST /api/v1/users/me/favorites/
+DELETE /api/v1/users/me/favorites/{restaurant_id}/
+
+## notifications
+GET   /api/v1/notifications/              — list notifications
+POST  /api/v1/notifications/mark-read/    — body: { "ids": [1, 2, 3] }
+
+## wallet
+GET   /api/v1/wallet/                  — current user's wallet
+GET   /api/v1/wallet/transactions/     — transaction history
+POST  /api/v1/wallet/topup/            — initiate a top-up (creates payment intent)
+
+## Bearer Token for Dev Testing
+curl -H "X-Dev-User-Id: test123" http://localhost:8000/api/v1/wallet/

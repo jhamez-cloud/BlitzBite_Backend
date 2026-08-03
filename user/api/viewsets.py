@@ -1,12 +1,22 @@
 # users/views.py
 from config.viewsets import StandardViewset
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from user.models import User, Address, PaymentMethod
-from user.serializers import UserSerializer, AddressSerializer, PaymentMethodSerializer
+from user.serializers import UserRegistrationSerializer, UserSerializer, AddressSerializer, PaymentMethodSerializer
 
 
 class UserViewSet(StandardViewset):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class RegisterView(APIView):
+    def post(self, request):
+        user = request.user  # already exists via get_or_create in the auth class
+        serializer = UserRegistrationSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(UserSerializer(user).data, status=201)
 
 
 class AddressViewSet(StandardViewset):

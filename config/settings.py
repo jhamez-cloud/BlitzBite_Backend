@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'corsheaders',
+    'drf_spectacular',
     'user',
     'restaurant',
     'menu',
@@ -51,8 +52,6 @@ INSTALLED_APPS = [
     'notification',
     'wallet',
 ]
-
-AUTH_USER_MODEL = 'user.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -131,15 +130,39 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
 # REST Framework Settings
+USE_DEV_AUTH = True  # Set to False in production
+
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'config.authentication.DevAuthentication',
+        'config.authentication.FirebaseAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+# DRF Spectacular Settings
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'BlitzBite API',
+    'VERSION': '1.0.0',
+    'SWAGGER_UI_SETTINGS': {
+        'persistAuthorization': True,  # keeps your header set across page reloads
+    },
+    'APPEND_COMPONENTS': {
+        'securitySchemes': {
+            'DevAuth': {
+                'type': 'apiKey',
+                'in': 'header',
+                'name': 'X-Dev-User-Id',
+            }
+        }
+    },
+    'SECURITY': [{'DevAuth': []}],
 }

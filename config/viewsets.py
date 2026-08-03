@@ -88,7 +88,7 @@ class StandardViewset(viewsets.ModelViewSet):
                         "status": "error",
                         "error": "FORBIDDEN",
                         "errors": [{
-                            "message": "Authnticated But Insufficient Role",
+                            "message": "Provide Firebase Token in Authorization Header",
                             "details": error_data
                         }]
                     }

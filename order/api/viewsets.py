@@ -1,4 +1,4 @@
-# orders/viewsets.py
+# orders/api/viewsets.py
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from config.viewsets import StandardViewset
@@ -17,9 +17,7 @@ class OrderViewSet(StandardViewset):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        # Once auth exists, scope this to request.user. For now, unscoped
-        # since there's no logged-in user to filter by yet — flagged as TODO.
-        return Order.objects.select_related('restaurant').prefetch_related(
+        return Order.objects.filter(user=self.request.user).select_related('restaurant').prefetch_related(
             'order_items__addons', 'order_timeline'
         )
 
@@ -33,7 +31,7 @@ class OrderViewSet(StandardViewset):
         try:
             order = create_order_from_cart(
                 cart=cart,
-                user=request.user if request.user.is_authenticated else None,
+                user=request.user,
                 delivery_address=data['delivery_address'],
                 payment_method=data['payment_method'],
                 tip=data.get('tip', 0),

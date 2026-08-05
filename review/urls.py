@@ -1,7 +1,9 @@
-from rest_framework.routers import DefaultRouter
-from .api.viewsets import ReviewViewset
+# reviews/urls.py — nested under restaurants, so lives alongside that router
+from rest_framework_nested import routers
+from restaurant.urls import router as restaurants_router  # reuse the already-registered 'restaurants' prefix
+from review.api.viewsets import RestaurantReviewViewSet
 
-router = DefaultRouter()
-router.register(r"reviews",ReviewViewset,basename="reviews")
+reviews_router = routers.NestedSimpleRouter(restaurants_router, r"restaurants", lookup="restaurant")
+reviews_router.register(r"reviews", RestaurantReviewViewSet, basename="restaurant-reviews")
 
-urlpatterns = router.urls
+urlpatterns = reviews_router.urls

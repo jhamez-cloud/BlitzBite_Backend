@@ -1,5 +1,6 @@
 # restaurants/viewsets.py
 from rest_framework import filters
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from config.viewsets import StandardViewset  # your existing wrapper base
 from restaurant.models import Restaurant, OpeningHours, RestaurantCategory
@@ -14,9 +15,12 @@ from restaurant.serializers import (
 
 class RestaurantViewSet(StandardViewset):
     queryset = Restaurant.objects.all()
+
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['is_featured', 'is_trending', 'is_temporarily_closed', 'categories']
     search_fields = ['name', 'description', 'address']
+
+    permission_classes = [AllowAny]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -34,6 +38,8 @@ class RestaurantViewSet(StandardViewset):
 
 class OpeningHoursViewSet(StandardViewset):
     serializer_class = OpeningHoursSerializer
+
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         return OpeningHours.objects.filter(restaurant_id=self.kwargs['restaurant_pk'])

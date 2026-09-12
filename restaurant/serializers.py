@@ -26,7 +26,7 @@ class OpeningHoursSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         open_time = attrs.get('open_time')
         close_time = attrs.get('close_time')
-        if open_time and close_time and open_time >= close_time:
+        if (open_time and close_time) and open_time >= close_time:
             raise serializers.ValidationError("open_time must be earlier than close_time.")
         return attrs
 

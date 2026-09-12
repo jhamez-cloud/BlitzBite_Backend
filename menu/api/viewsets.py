@@ -1,4 +1,5 @@
 # menu/viewsets.py
+from rest_framework.permissions import AllowAny
 from config.viewsets import StandardViewset
 from menu.models import MenuCategory, MenuItem, MenuItemAddon, Addon
 from menu.serializers import (
@@ -17,6 +18,7 @@ class MenuCategoryViewSet(StandardViewset):
     same reasoning as RestaurantCategory."""
     queryset = MenuCategory.objects.all()
     serializer_class = MenuCategorySerializer
+    permission_classes = [AllowAny]
 
 
 class AddonViewSet(StandardViewset):
@@ -32,6 +34,8 @@ class AddonViewSet(StandardViewset):
 
 class MenuItemViewSet(StandardViewset):
     """Nested under restaurant."""
+
+    permission_classes = [AllowAny]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -53,7 +57,7 @@ class MenuItemViewSet(StandardViewset):
 class MenuItemAddonViewSet(StandardViewset):
     """Nested under menu item — which addons this specific item offers,
     and whether each is required/how many can be picked."""
-
+    permission_classes = [AllowAny]
     def get_serializer_class(self):
         if self.action in ('create', 'update', 'partial_update'):
             return MenuItemAddonWriteSerializer
